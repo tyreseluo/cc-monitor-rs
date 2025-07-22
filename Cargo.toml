@@ -1,0 +1,37 @@
+[package]
+name = "cc-monitor-rs"
+version = "0.1.0"
+edition = "2024"
+authors = ["Zhang Handong"]
+description = "Real-time Claude Code usage monitor with native UI built using Rust and Makepad"
+license = "MIT"
+repository = "https://github.com/zhanghandong/cc-monitor-rs"
+homepage = "https://github.com/zhanghandong/cc-monitor-rs"
+readme = "README.md"
+keywords = ["claude", "monitoring", "makepad", "ui", "cli"]
+categories = ["gui", "command-line-utilities", "visualization"]
+
+[dependencies]
+makepad-widgets = { git = "https://github.com/kevinaboos/makepad", branch = "portal_list_is_filling_viewport" }
+tokio = { version = "1.41", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+chrono = "0.4"
+regex = "1.11"
+notify-rust = "4.11"
+glob = "0.3"
+crossbeam-queue = "0.3"
+anyhow = "1.0"
+tray-icon = "0.19"
+image = "0.25"
+
+[features]
+default = []
+
+[lib]
+name = "cc_monitor_rs"
+path = "src/lib.rs"
+
+[[bin]]
+name = "cc-monitor-rs"
+path = "src/main.rs"
