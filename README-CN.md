@@ -1,7 +1,7 @@
 # Claude Code Monitor (Claude Code 监测器)
 
 <p align="center">
-  <img src="assets/icon.png" width="128" height="128" alt="Claude Code Monitor Logo">
+  <img src="assets/ccm-logo.png" width="128" height="128" alt="Claude Code Monitor Logo">
 </p>
 
 <p align="center">
