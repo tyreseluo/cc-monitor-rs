@@ -1,3 +1,5 @@
+#![allow(dead_code)]
+
 use tray_icon::{
     menu::{Menu, MenuItem, PredefinedMenuItem},
     TrayIcon, TrayIconBuilder,
@@ -7,7 +9,7 @@ use tray_icon::{
 // - Windows: Requires win32 event loop
 // - macOS: Must be created on main thread
 // - Linux: Requires GTK event loop, libappindicator
-use std::sync::{Arc, Mutex};
+use std::{cell::RefCell, rc::Rc};
 use anyhow::Result;
 use crate::monitor::MonitorData;
 
@@ -57,7 +59,7 @@ impl TrayManager {
         let icon = Self::create_icon()?;
 
         // Build tray with platform considerations
-        let mut builder = TrayIconBuilder::new()
+        let builder = TrayIconBuilder::new()
             .with_menu(Box::new(menu.clone()))
             .with_tooltip("Claude Code Monitor")
             .with_icon(icon);
@@ -185,10 +187,10 @@ impl TrayManager {
                 }
 
                 // Draw "C" inside
-                if x >= 10 && x <= 22 && y >= 8 && y <= 24 {
-                    let in_c = (x >= 10 && x <= 14 && y >= 8 && y <= 24) || // Left vertical
-                               (y >= 8 && y <= 12 && x >= 10 && x <= 22) || // Top horizontal
-                               (y >= 20 && y <= 24 && x >= 10 && x <= 22);   // Bottom horizontal
+                if (10..=22).contains(&x) && (8..=24).contains(&y){
+                    let in_c = ((10..=14).contains(&x) && (8..=24).contains(&y)) || // Left vertical
+                               ((8..=12).contains(&y) && (10..=22).contains(&x)) || // Top horizontal
+                               ((20..=24).contains(&y) && (10..=22).contains(&x));   // Bottom horizontal
 
                     if in_c {
                         rgba[idx] = 255;      // R
@@ -212,33 +214,40 @@ impl TrayManager {
 
 // Thread-safe wrapper for the tray manager
 pub struct TrayHandle {
-    inner: Arc<Mutex<Option<TrayManager>>>,
+    inner: Rc<RefCell<Option<TrayManager>>>,
 }
 
 impl TrayHandle {
     pub fn new() -> Self {
         Self {
-            inner: Arc::new(Mutex::new(None)),
+            inner: Rc::new(RefCell::new(None)),
         }
     }
 
     pub fn init(&self) -> Result<()> {
         let tray = TrayManager::new()?;
-        *self.inner.lock().unwrap() = Some(tray);
+        *self.inner.borrow_mut() = Some(tray);
         Ok(())
     }
 
     pub fn update_status(&self, data: &MonitorData) -> Result<()> {
-        if let Some(tray) = self.inner.lock().unwrap().as_ref() {
+        if let Some(tray) = self.inner.borrow().as_ref() {
             tray.update_status(data)?;
         }
         Ok(())
     }
 
     pub fn handle_menu_event(&self, event: &tray_icon::menu::MenuEvent) -> bool {
-        if let Some(tray) = self.inner.lock().unwrap().as_ref() {
-            return tray.handle_menu_event(event);
+        if let Some(tray) = self.inner.borrow().as_ref() {
+            tray.handle_menu_event(event)
+        } else {
+            false
         }
-        false
+    }
+}
+
+impl Default for TrayHandle {
+    fn default() -> Self {
+        Self::new()
     }
 }

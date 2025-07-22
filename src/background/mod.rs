@@ -7,7 +7,7 @@ use anyhow::Result;
 
 use crate::monitor::{NetworkMonitor, CcusageMonitor, MonitorData, CcusageData};
 use crate::ui_updates::{enqueue_monitor_update, MonitorUpdate};
-use crate::utils::notifications::{show_notification, show_critical_notification, show_usage_notification};
+use crate::utils::notifications::{show_notification, show_usage_notification};
 
 /// The single global Tokio runtime that is used by all async tasks.
 static TOKIO_RUNTIME: OnceLock<Runtime> = OnceLock::new();
@@ -152,12 +152,12 @@ async fn perform_monitor_update(
     if let Some(last_status) = last_network_status {
         if !*last_status && network_connected {
             // Network restored notification
-            let _ = tokio::task::spawn_blocking(|| {
+            tokio::task::spawn_blocking(|| {
                 show_notification("Claude Code 监测器", "🎉 网络连接已恢复");
             });
         } else if *last_status && !network_connected {
             // Network lost notification
-            let _ = tokio::task::spawn_blocking(|| {
+            tokio::task::spawn_blocking(|| {
                 show_notification("Claude Code 监测器", "🚨 网络连接中断");
             });
         }
@@ -195,7 +195,7 @@ async fn perform_monitor_update(
         };
         
         // Send usage notification
-        let _ = tokio::task::spawn_blocking({
+        tokio::task::spawn_blocking({
             let tokens = ccusage_data.tokens_num;
             let cost = ccusage_data.cost_num;
             let remaining = remaining_time.clone();
@@ -206,5 +206,5 @@ async fn perform_monitor_update(
     }
     
     // Enqueue update for UI
-    enqueue_monitor_update(MonitorUpdate::DataUpdate(monitor_data));
+    enqueue_monitor_update(MonitorUpdate::DataUpdate(Box::new(monitor_data)));
 }

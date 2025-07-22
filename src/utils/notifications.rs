@@ -1,4 +1,4 @@
-use notify_rust::{Notification, Urgency};
+use notify_rust::Notification;
 
 pub fn show_notification(title: &str, message: &str) {
     #[cfg(target_os = "macos")]
