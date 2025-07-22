@@ -16,9 +16,6 @@
 
 ## 🌍 跨平台支持
 
-![ccm-tray](assets/ccm-tray.png)
-![ccm](assets/ccm.png)
-
 这是一个跨平台应用程序，支持运行在：
 - 🖥️ **macOS** (10.15+)
 - 🐧 **Linux** (Ubuntu、Debian、Arch、Fedora 等)
@@ -55,8 +52,13 @@
 ## 📸 截图
 
 <p align="center">
-  <img src="assets/screenshot-main.png" width="600" alt="主界面">
+  <img src="assets/ccm-tray.png" width="600" alt="tray">
 </p>
+
+<p align="center">
+  <img src="assets/ccm.png" width="600" alt="Main Interface">
+</p>
+
 
 ## 🚀 快速开始
 

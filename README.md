@@ -16,9 +16,6 @@
 
 ## 🌍 Cross-Platform Support
 
-![ccm-tray](assets/ccm-tray.png)
-![ccm](assets/ccm.png)
-
 This is a cross-platform application that runs on:
 - 🖥️ **macOS** (10.15+)
 - 🐧 **Linux** (Ubuntu, Debian, Arch, Fedora, etc.)
@@ -55,7 +52,11 @@ We welcome everyone to help test the application on different platforms and repo
 ## 📸 Screenshots
 
 <p align="center">
-  <img src="assets/screenshot-main.png" width="600" alt="Main Interface">
+  <img src="assets/ccm-tray.png" width="600" alt="tray">
+</p>
+
+<p align="center">
+  <img src="assets/ccm.png" width="600" alt="Main Interface">
 </p>
 
 ## 🚀 Getting Started
