@@ -1,6 +1,7 @@
 use makepad_widgets::*;
 use std::collections::HashMap;
 use crate::monitor::DailyCost;
+use crate::i18n;
 
 live_design! {
     use link::theme::*;
@@ -106,7 +107,7 @@ impl Chart {
     fn apply_chart_updates(&mut self, cx: &mut Cx) {
         // Update summary
         if let Some(mut label) = self.view.label(id!(total_label)).borrow_mut() {
-            label.set_text(cx, &format!("💳 总计: ${:.2}", self.total_cost));
+            label.set_text(cx, &format!("{}: ${:.2}", i18n::get(i18n::keys::HISTORY_TOTAL), self.total_cost));
         }
         
         if let Some(mut label) = self.view.label(id!(average_label)).borrow_mut() {
@@ -115,14 +116,26 @@ impl Chart {
             } else {
                 0.0
             };
-            label.set_text(cx, &format!("📊 平均: ${:.2}/天", avg));
+            label.set_text(cx, &format!("{}: ${:.2}/{}", 
+                i18n::get(i18n::keys::HISTORY_AVERAGE), 
+                avg,
+                i18n::get(i18n::keys::COMMON_DAY)
+            ));
         }
         
         if self.session_count > 0 {
             if let Some(mut label) = self.view.label(id!(sessions_label)).borrow_mut() {
-                label.set_text(cx, &format!("🔢 总会话数: {}  |  ⚡ 活跃会话: {}", 
-                    self.session_count, self.active_sessions));
+                label.set_text(cx, &format!("{}: {}  |  {}: {}", 
+                    i18n::get(i18n::keys::HISTORY_SESSIONS_TOTAL),
+                    self.session_count,
+                    i18n::get(i18n::keys::HISTORY_SESSIONS_ACTIVE),
+                    self.active_sessions
+                ));
             }
         }
+    }
+    
+    pub fn refresh_translations(&mut self, cx: &mut Cx) {
+        self.apply_chart_updates(cx);
     }
 }

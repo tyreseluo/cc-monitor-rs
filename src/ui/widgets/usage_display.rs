@@ -1,5 +1,6 @@
 use makepad_widgets::*;
 use crate::monitor::CcusageData;
+use crate::i18n;
 
 live_design! {
     use link::theme::*;
@@ -156,9 +157,9 @@ impl UsageDisplay {
         // Update session start
         if let Some(mut label) = self.view.label(id!(session_label)).borrow_mut() {
             let text = if self.ccusage_data.latest_session != "--" {
-                format!("📅 对话开始: {}", self.ccusage_data.latest_session)
+                format!("{}: {}", i18n::get(i18n::keys::USAGE_SESSION_START), self.ccusage_data.latest_session)
             } else {
-                "📅 对话开始: --".to_string()
+                format!("{}: --", i18n::get(i18n::keys::USAGE_SESSION_START))
             };
             label.set_text(cx, &text);
         }
@@ -166,9 +167,11 @@ impl UsageDisplay {
         // Update time info
         if let Some(mut label) = self.view.label(id!(time_label)).borrow_mut() {
             if self.ccusage_data.session_start != "--" {
-                let text = format!("⏱️  时间: {} → {} (重置)", 
+                let text = format!("{}: {} → {} ({})", 
+                    i18n::get(i18n::keys::USAGE_TIME),
                     self.ccusage_data.session_start, 
-                    self.ccusage_data.session_end
+                    self.ccusage_data.session_end,
+                    i18n::get(i18n::keys::USAGE_RESET)
                 );
                 label.set_text(cx, &text);
             }
@@ -176,7 +179,7 @@ impl UsageDisplay {
         
         // Update remaining time
         if let Some(mut label) = self.view.label(id!(remaining_label)).borrow_mut() {
-            label.set_text(cx, &format!("⏰ 剩余: {}", self.ccusage_data.remaining_time));
+            label.set_text(cx, &format!("{}: {}", i18n::get(i18n::keys::USAGE_REMAINING), self.ccusage_data.remaining_time));
         }
         
         // Update tokens
@@ -188,23 +191,27 @@ impl UsageDisplay {
         
         // Update cost
         if let Some(mut label) = self.view.label(id!(cost_label)).borrow_mut() {
-            label.set_text(cx, &format!("💰 费用: {}", self.ccusage_data.cost));
+            label.set_text(cx, &format!("{}: {}", i18n::get(i18n::keys::USAGE_COST), self.ccusage_data.cost));
         }
         
         // Update model
         if let Some(mut label) = self.view.label(id!(model_label)).borrow_mut() {
-            label.set_text(cx, &format!("🤖 模型: {}", self.ccusage_data.model));
+            label.set_text(cx, &format!("{}: {}", i18n::get(i18n::keys::USAGE_MODEL), self.ccusage_data.model));
         }
         
         // Update status
         if let Some(mut label) = self.view.label(id!(status_label)).borrow_mut() {
             let status_text = match self.ccusage_data.status.as_str() {
-                "ACTIVE" => "⚡ 活跃中",
-                "COMPLETED" => "✅ 已完成",
-                "RUNNING" => "🔄 运行中",
-                _ => "⏸️  未活动",
+                "ACTIVE" => i18n::get(i18n::keys::USAGE_ACTIVE),
+                "COMPLETED" => i18n::get(i18n::keys::USAGE_COMPLETED),
+                "RUNNING" => i18n::get(i18n::keys::USAGE_RUNNING),
+                _ => i18n::get(i18n::keys::USAGE_INACTIVE),
             };
-            label.set_text(cx, &format!("📍 状态: {}", status_text));
+            label.set_text(cx, &format!("{}: {}", i18n::get(i18n::keys::USAGE_STATUS), status_text));
         }
+    }
+    
+    pub fn refresh_translations(&mut self, cx: &mut Cx) {
+        self.apply_data_updates(cx);
     }
 }

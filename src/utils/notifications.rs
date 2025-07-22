@@ -1,4 +1,7 @@
-use notify_rust::{Notification, Urgency};
+use notify_rust::Notification;
+#[cfg(not(target_os = "macos"))]
+use notify_rust::Urgency;
+use crate::i18n;
 
 pub fn show_notification(title: &str, message: &str) {
     #[cfg(target_os = "macos")]
@@ -57,13 +60,16 @@ pub fn show_critical_notification(title: &str, message: &str) {
 
 pub fn show_usage_notification(tokens: i64, cost: f64, remaining_time: &str) {
     let message = format!(
-        "Token 使用量: {}\n花费: ${:.2}\n剩余时间: {}",
+        "Token {}: {}\n{}: ${:.2}\n{}: {}",
+        i18n::get(i18n::keys::TRAY_USAGE),
         format_number(tokens),
+        i18n::get(i18n::keys::TRAY_COST),
         cost,
+        i18n::get(i18n::keys::TRAY_REMAINING),
         remaining_time
     );
     
-    show_notification("Claude Code 使用状态", &message);
+    show_notification(&i18n::get(i18n::keys::NOTIF_USAGE_STATUS), &message);
 }
 
 fn format_number(num: i64) -> String {
