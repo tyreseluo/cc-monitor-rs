@@ -2,10 +2,12 @@
 
 <p align="center">
   <img src="assets/ccm-logo.png" width="128" height="128" alt="Claude Code Monitor Logo">
+  <br>
+  <sub>Let Claude code it. Enjoy your cup.</sub>
 </p>
 
 <p align="center">
-  A real-time Claude Code usage monitor built with Rust and Makepad
+  A real-time Claude Code usage monitor built with Rust and Makepad.
 </p>
 
 <p align="center">

@@ -2,6 +2,8 @@
 
 <p align="center">
   <img src="assets/ccm-logo.png" width="128" height="128" alt="Claude Code Monitor Logo">
+  <br>
+  <sub>写代码的事，交给 Claude Code。我只管喝咖啡。</sub>
 </p>
 
 <p align="center">
