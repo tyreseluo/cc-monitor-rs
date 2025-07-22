@@ -136,7 +136,22 @@ impl TrayManager {
     }
 
     fn create_icon() -> Result<tray_icon::Icon> {
-        // Create a simple 32x32 icon programmatically
+        // Load ccm-logo.png from assets
+        let icon_path = std::path::Path::new("assets/ccm-logo.png");
+        
+        // Try to load from file system first (for development)
+        if icon_path.exists() {
+            let icon_data = std::fs::read(icon_path)?;
+            let img = image::load_from_memory(&icon_data)?;
+            let rgba = img.to_rgba8();
+            let (width, height) = (rgba.width(), rgba.height());
+            let icon_data = rgba.into_raw();
+            
+            return tray_icon::Icon::from_rgba(icon_data, width, height)
+                .map_err(|e| anyhow::anyhow!("Failed to create icon: {}", e));
+        }
+        
+        // Fallback to programmatically generated icon if file not found
         let size = 32;
         let mut rgba = vec![0u8; size * size * 4];
 
