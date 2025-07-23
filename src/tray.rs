@@ -9,7 +9,7 @@ use tray_icon::{
 // - Windows: Requires win32 event loop
 // - macOS: Must be created on main thread
 // - Linux: Requires GTK event loop, libappindicator
-use std::{cell::RefCell, rc::Rc};
+use std::{cell::RefCell, path::PathBuf, rc::Rc};
 use anyhow::Result;
 use crate::monitor::MonitorData;
 use crate::i18n;
@@ -166,21 +166,35 @@ impl TrayManager {
     }
 
     fn create_icon() -> Result<tray_icon::Icon> {
-        // Load ccm-logo.png from assets
-        let icon_path = std::path::Path::new("assets/ccm-logo.png");
-        
-        // Try to load from file system first (for development)
-        if icon_path.exists() {
-            let icon_data = std::fs::read(icon_path)?;
-            let img = image::load_from_memory(&icon_data)?;
-            let rgba = img.to_rgba8();
-            let (width, height) = (rgba.width(), rgba.height());
-            let icon_data = rgba.into_raw();
-            
-            return tray_icon::Icon::from_rgba(icon_data, width, height)
-                .map_err(|e| anyhow::anyhow!("Failed to create icon: {}", e));
+
+        fn possible_icon_paths() -> Vec<PathBuf> {
+            let mut paths = vec![];
+
+            paths.push(PathBuf::from("assets/ccm-logo.png"));
+
+            if let Ok(exe_path) = std::env::current_exe() {
+                if let Some(app_dir) = exe_path.parent() {
+                    let bundle_path = app_dir.join("../Resources/cc-monitor-rs/resources/ccm-logo.png");
+                    paths.push(bundle_path);
+                }
+            }
+
+            paths
         }
-        
+
+         for path in possible_icon_paths() {
+            if path.exists() {
+                let icon_data = std::fs::read(&path)?;
+                let img = image::load_from_memory(&icon_data)?;
+                let rgba = img.to_rgba8();
+                let (width, height) = (rgba.width(), rgba.height());
+                let icon_data = rgba.into_raw();
+
+                return tray_icon::Icon::from_rgba(icon_data, width, height)
+                    .map_err(|e| anyhow::anyhow!("Failed to create icon from {:?}: {}", path, e));
+            }
+        }
+
         // Fallback to programmatically generated icon if file not found
         let size = 32;
         let mut rgba = vec![0u8; size * size * 4];
