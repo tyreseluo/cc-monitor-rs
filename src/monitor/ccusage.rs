@@ -436,7 +436,7 @@ impl CcusageMonitor {
         if let Some(npx_path) = &self.npx_path {
             // Try daily command first
             if let Ok(output) = Command::new(npx_path)
-                .args(&["--yes", "ccusage@latest", "daily", "--order", "asc"])  // Remove calculate mode for speed
+                .args(&["--yes", "ccusage@latest", "daily", "--order", "asc"])
                 .output() 
             {
                 if output.status.success() {
@@ -448,7 +448,7 @@ impl CcusageMonitor {
             // If no data from daily, try blocks command
             if daily_costs.is_empty() {
                 if let Ok(output) = Command::new(npx_path)
-                    .args(&["--yes", "ccusage@latest", "blocks"])  // Remove calculate mode for speed
+                    .args(&["--yes", "ccusage@latest", "blocks"])
                     .output()
                 {
                     if output.status.success() {
@@ -463,38 +463,57 @@ impl CcusageMonitor {
     }
     
     fn parse_daily_output(&self, output: &str, daily_costs: &mut HashMap<String, DailyCost>) {
-        let date_regex = Regex::new(r"(\d{4})\s+(\d{2}-\d{2})|(\d{2}-\d{2})").unwrap();
-        let cost_regex = Regex::new(r"\$?(\d+\.?\d*)").unwrap();
+        let year_regex = Regex::new(r"^\d{4}$").unwrap();
+        let date_regex = Regex::new(r"^\d{2}-\d{2}$").unwrap();
+        let cost_regex = Regex::new(r"\$\s*(\d+\.?\d*)").unwrap();
         
-        for line in output.lines() {
+        
+        let lines: Vec<&str> = output.lines().collect();
+        let mut i = 0;
+        
+        while i < lines.len() {
+            let line = lines[i];
+            
             if line.contains('│') && !line.contains("Date") && !line.contains("Total") 
                 && !line.contains('─') && !line.contains('═') {
                 let parts: Vec<&str> = line.split('│').collect();
+                
                 if parts.len() >= 9 {
                     let date_str = self.clean_ansi_codes(parts[1]);
                     let cost_str = self.clean_ansi_codes(parts[8]);
                     
-                    if let Some(date_match) = date_regex.find(&date_str) {
-                        let month_day = if date_match.as_str().contains(' ') {
-                            date_match.as_str().split(' ').nth(1).unwrap_or("")
-                        } else {
-                            date_match.as_str()
-                        };
-                        
-                        if let Some(cost_match) = cost_regex.find(&cost_str) {
-                            let cost_value: f64 = cost_match.as_str().parse().unwrap_or(0.0);
-                            daily_costs.insert(
-                                month_day.to_string(),
-                                DailyCost {
-                                    date: month_day.to_string(),
-                                    cost: cost_value,
-                                    sessions: 1,
+                    // Check if this line has a year and cost
+                    if year_regex.is_match(&date_str) && cost_regex.is_match(&cost_str) {
+                        // Look at the next line for the month-day
+                        if i + 1 < lines.len() {
+                            let next_line = lines[i + 1];
+                            if next_line.contains('│') {
+                                let next_parts: Vec<&str> = next_line.split('│').collect();
+                                if next_parts.len() >= 9 {
+                                    let month_day = self.clean_ansi_codes(next_parts[1]);
+                                    
+                                    if date_regex.is_match(&month_day) {
+                                        if let Some(cost_match) = cost_regex.captures(&cost_str) {
+                                            if let Some(cost_str) = cost_match.get(1) {
+                                                let cost_value: f64 = cost_str.as_str().parse().unwrap_or(0.0);
+                                                daily_costs.insert(
+                                                    month_day.to_string(),
+                                                    DailyCost {
+                                                        date: month_day.to_string(),
+                                                        cost: cost_value,
+                                                        sessions: 1,
+                                                    }
+                                                );
+                                            }
+                                        }
+                                    }
                                 }
-                            );
+                            }
                         }
                     }
                 }
             }
+            i += 1;
         }
     }
     

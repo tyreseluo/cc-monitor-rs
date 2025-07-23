@@ -236,6 +236,23 @@ impl TrayManager {
         // Check if quit was clicked
         event.id() == self.quit_item.id()
     }
+    
+    pub fn refresh_translations(&self) -> Result<()> {
+        // Update all menu item texts with current language
+        self.status_item.set_text(i18n::get(i18n::keys::APP_VERSION));
+        self.network_item.set_text(format!("{}: {}", i18n::get(i18n::keys::TRAY_NETWORK), i18n::get(i18n::keys::TRAY_CHECKING)));
+        self.usage_item.set_text(format!("{}: {}", i18n::get(i18n::keys::TRAY_USAGE), i18n::get(i18n::keys::TRAY_CHECKING)));
+        self.cost_item.set_text(format!("{}: {}", i18n::get(i18n::keys::TRAY_COST), i18n::get(i18n::keys::TRAY_CHECKING)));
+        self.model_item.set_text(format!("{}: {}", i18n::get(i18n::keys::TRAY_MODEL), i18n::get(i18n::keys::TRAY_CHECKING)));
+        self.remaining_item.set_text(format!("{}: {}", i18n::get(i18n::keys::TRAY_REMAINING), i18n::get(i18n::keys::TRAY_CHECKING)));
+        self.status_active_item.set_text(format!("{}: {}", i18n::get(i18n::keys::TRAY_STATUS), i18n::get(i18n::keys::TRAY_CHECKING)));
+        self.quit_item.set_text(i18n::get(i18n::keys::TRAY_QUIT));
+        
+        // Update tooltip
+        let _ = self.tray.set_tooltip(Some(i18n::get(i18n::keys::APP_NAME)));
+        
+        Ok(())
+    }
 }
 
 // Thread-safe wrapper for the tray manager
@@ -268,5 +285,12 @@ impl TrayHandle {
             return tray.handle_menu_event(event);
         }
         false
+    }
+    
+    pub fn refresh_translations(&self) -> Result<()> {
+        if let Some(tray) = self.inner.lock().unwrap().as_ref() {
+            tray.refresh_translations()?;
+        }
+        Ok(())
     }
 }

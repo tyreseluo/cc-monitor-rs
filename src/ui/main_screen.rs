@@ -14,27 +14,33 @@ live_design! {
     pub MainScreen = {{MainScreen}} {
         width: Fill,
         height: Fill,
-        flow: Down,
+        
+        <View> {
+            width: Fill,
+            height: Fill,
+            flow: Down,
 
-        padding: 20
-        spacing: 20
+            padding: 20
+            spacing: 20
 
-        show_bg: true,
-        draw_bg: {
-            color: #1a1a1a
-        }
+            show_bg: true,
+            draw_bg: {
+                color: #1a1a1a
+            }
 
-        // Title
-        title = <View> {
+        // Title and language selector section
+        header = <View> {
             width: Fill,
             height: Fit,
             flow: Right,
-            spacing: 20
-            align: {x: 0.5, y: 0.5}
+            align: {y: 0.5}
+            spacing: 10
             
+            // Title centered with flex
             <View> {
-                width: Fit,
+                width: Fill,
                 height: Fit,
+                align: {x: 0.5, y: 0.5}
                 
                 title_label = <Label> {
                     text: "Claude Code 网络监测器 v1.0"
@@ -47,40 +53,20 @@ live_design! {
                 }
             }
             
-            lang_button = <Button> {
+            // Language dropdown on the right
+            lang_dropdown = <DropDown> {
                 width: 120,
                 height: 30,
-                text: "中文"
+                labels: ["🇨🇳 中文", "🇺🇸 English", "🇯🇵 日本語"],
+                values: [Chinese, English, Japanese]
+                selected_item: 0
+                popup_menu_position: BelowInput
+                
                 draw_text: {
                     text_style: {
                         font_size: 14.0
                     }
                     color: #ffffff
-                }
-                draw_bg: {
-                    instance hover: 0.0
-                    instance pressed: 0.0
-                    
-                    fn pixel(self) -> vec4 {
-                        let sdf = Sdf2d::viewport(self.pos * self.rect_size);
-                        sdf.box(
-                            1,
-                            1,
-                            self.rect_size.x - 2.0,
-                            self.rect_size.y - 2.0,
-                            4.0
-                        );
-                        
-                        if self.pressed > 0.0 {
-                            sdf.fill(#3a3a3a);
-                        } else if self.hover > 0.0 {
-                            sdf.fill(#4a4a4a);
-                        } else {
-                            sdf.fill(#2a2a2a);
-                        }
-                        
-                        return sdf.result;
-                    }
                 }
             }
         }
@@ -197,6 +183,7 @@ live_design! {
         }
     }
 }
+}
 
 #[derive(Live, LiveHook, Widget)]
 pub struct MainScreen {
@@ -208,18 +195,15 @@ impl Widget for MainScreen {
     fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
         self.view.handle_event(cx, event, scope);
         
-        // Handle keyboard shortcuts
-        if let Event::KeyDown(ke) = event {
-            // Check for Cmd (Mac) or Ctrl (Windows/Linux) + Space
-            if (ke.modifiers.logo || ke.modifiers.control) && ke.key_code == KeyCode::Space {
-                self.cycle_language(cx);
-            }
-        }
-        
-        // Handle language button click
+        // Handle dropdown selection
         if let Event::Actions(actions) = event {
-            if self.view.button(id!(lang_button)).clicked(actions) {
-                self.cycle_language(cx);
+            if let Some(index) = self.view.drop_down(id!(lang_dropdown)).selected(&actions) {
+                match index {
+                    0 => self.select_language(cx, i18n::Language::Chinese),
+                    1 => self.select_language(cx, i18n::Language::English),
+                    2 => self.select_language(cx, i18n::Language::Japanese),
+                    _ => {}
+                }
             }
         }
     }
@@ -231,11 +215,16 @@ impl Widget for MainScreen {
 
 impl MainScreen {
     pub fn initialize(&mut self, cx: &mut Cx) {
-        // Set initial language button text
+        // Set initial language selection in dropdown
         let lang = i18n::get_language();
-        if let Some(mut button) = self.view.button(id!(lang_button)).borrow_mut() {
-            button.set_text(cx, &self.get_language_display(lang));
-        }
+        let selected_index = match lang {
+            i18n::Language::Chinese => 0,
+            i18n::Language::English => 1,
+            i18n::Language::Japanese => 2,
+        };
+        
+        self.view.drop_down(id!(lang_dropdown)).set_selected_item(cx, selected_index);
+        
         // Refresh all translations
         self.refresh_translations(cx);
     }
@@ -332,32 +321,16 @@ impl MainScreen {
         }
     }
     
-    fn cycle_language(&mut self, cx: &mut Cx) {
-        // Cycle through languages
-        let current_lang = i18n::get_language();
-        let new_lang = match current_lang {
-            i18n::Language::Chinese => i18n::Language::English,
-            i18n::Language::English => i18n::Language::Japanese,
-            i18n::Language::Japanese => i18n::Language::Chinese,
-        };
-        i18n::set_language(new_lang);
-        
-        // Update button text
-        if let Some(mut button) = self.view.button(id!(lang_button)).borrow_mut() {
-            button.set_text(cx, &self.get_language_display(new_lang));
-        }
+    fn select_language(&mut self, cx: &mut Cx, lang: i18n::Language) {
+        // Set language
+        i18n::set_language(lang);
         
         // Refresh all translations
         self.refresh_translations(cx);
         
+        // Notify about language change to update tray
+        crate::ui_updates::enqueue_monitor_update(crate::ui_updates::MonitorUpdate::LanguageChanged);
+        
         cx.redraw_all();
-    }
-    
-    fn get_language_display(&self, lang: i18n::Language) -> String {
-        match lang {
-            i18n::Language::Chinese => "🇨🇳 中文".to_string(),
-            i18n::Language::English => "🇺🇸 English".to_string(),
-            i18n::Language::Japanese => "🇯🇵 日本語".to_string(),
-        }
     }
 }

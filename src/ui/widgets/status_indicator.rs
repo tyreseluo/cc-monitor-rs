@@ -1,5 +1,6 @@
 use makepad_widgets::*;
 use crate::i18n;
+use crate::monitor::SpeedLevel;
 
 live_design! {
     use link::theme::*;
@@ -91,7 +92,7 @@ live_design! {
 pub struct StatusIndicator {
     #[deref] view: View,
     #[rust] connected: bool,
-    #[rust] speed: Option<String>,
+    #[rust] speed: Option<SpeedLevel>,
     #[rust] latency: Option<String>,
 }
 
@@ -120,7 +121,7 @@ impl Widget for StatusIndicator {
 }
 
 impl StatusIndicator {
-    pub fn update_status(&mut self, cx: &mut Cx, connected: bool, speed: Option<String>, latency: Option<String>) {
+    pub fn update_status(&mut self, cx: &mut Cx, connected: bool, speed: Option<SpeedLevel>, latency: Option<String>) {
         self.connected = connected;
         self.speed = speed;
         self.latency = latency;
@@ -142,7 +143,15 @@ impl StatusIndicator {
         // Update speed
         if let Some(mut label) = self.view.label(id!(speed_label)).borrow_mut() {
             let text = match &self.speed {
-                Some(speed) => format!("{}: {}", i18n::get(i18n::keys::NETWORK_SPEED), speed),
+                Some(speed_level) => {
+                    let speed_text = match speed_level {
+                        SpeedLevel::Excellent => i18n::get(i18n::keys::NETWORK_EXCELLENT),
+                        SpeedLevel::Good => i18n::get(i18n::keys::NETWORK_GOOD),
+                        SpeedLevel::Fair => i18n::get(i18n::keys::NETWORK_FAIR),
+                        SpeedLevel::Slow => i18n::get(i18n::keys::NETWORK_SLOW),
+                    };
+                    format!("{}: {}", i18n::get(i18n::keys::NETWORK_SPEED), speed_text)
+                },
                 None => format!("{}: --", i18n::get(i18n::keys::NETWORK_SPEED)),
             };
             label.set_text(cx, &text);

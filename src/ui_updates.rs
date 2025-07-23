@@ -12,6 +12,8 @@ pub enum MonitorUpdate {
     StatusMessage(String),
     /// Error message to display
     ErrorMessage(String),
+    /// Language has been changed
+    LanguageChanged,
 }
 
 /// Global queue for pending monitor updates

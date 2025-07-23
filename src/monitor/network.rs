@@ -2,7 +2,20 @@ use std::process::Command;
 use std::time::{Duration, Instant};
 use std::net::{TcpStream, ToSocketAddrs};
 use std::env;
-use crate::i18n;
+
+#[derive(Clone, Debug, PartialEq)]
+pub enum SpeedLevel {
+    Excellent,
+    Good,
+    Fair,
+    Slow,
+}
+
+impl Default for SpeedLevel {
+    fn default() -> Self {
+        SpeedLevel::Fair
+    }
+}
 
 #[derive(Clone)]
 pub struct NetworkMonitor;
@@ -131,7 +144,7 @@ impl NetworkMonitor {
         }
     }
     
-    pub fn check_connection(&self) -> (bool, Option<String>, Option<f64>) {
+    pub fn check_connection(&self) -> (bool, Option<SpeedLevel>, Option<f64>) {
         let start = Instant::now();
         
         // Check if we need to use proxy
@@ -168,16 +181,16 @@ impl NetworkMonitor {
                         Ok(_) => {
                             let elapsed = start.elapsed().as_millis() as f64;
                             let speed = if elapsed < 100.0 {
-                                i18n::get(i18n::keys::NETWORK_EXCELLENT)
+                                SpeedLevel::Excellent
                             } else if elapsed < 200.0 {
-                                i18n::get(i18n::keys::NETWORK_GOOD)
+                                SpeedLevel::Good
                             } else if elapsed < 500.0 {
-                                i18n::get(i18n::keys::NETWORK_FAIR)
+                                SpeedLevel::Fair
                             } else {
-                                i18n::get(i18n::keys::NETWORK_SLOW)
+                                SpeedLevel::Slow
                             };
                             
-                            (true, Some(speed.to_string()), Some(elapsed))
+                            (true, Some(speed), Some(elapsed))
                         }
                         Err(_) => (false, None, None),
                     }

@@ -9,10 +9,10 @@
 - [ ] Generate installers and portable versions
 
 ### 2. Internationalization (i18n)
-- [ ] Implement multi-language support framework
-- [ ] Extract all UI text
-- [ ] Add language switching functionality
-- [ ] Initial language support:
+- [x] Implement multi-language support framework
+- [x] Extract all UI text
+- [x] Add language switching functionality
+- [x] Initial language support:
   - Chinese
   - English
   - Japanese

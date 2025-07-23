@@ -19,7 +19,7 @@ live_design! {
                 window: {
                     title: "Claude Code Monitor",
                     position: vec2(100, 100),
-                    inner_size: vec2(600, 800)
+                    inner_size: vec2(1057, 1205)
                 },
                 show_bg: true,
                 pass: {clear_color: #1a1a1a},
@@ -112,6 +112,14 @@ impl MatchEvent for App {
                 }
                 MonitorUpdate::ErrorMessage(err) => {
                     error!("Error: {}", err);
+                }
+                MonitorUpdate::LanguageChanged => {
+                    // Refresh tray translations
+                    if let Some(ref tray) = self.tray_handle {
+                        if let Err(e) = tray.refresh_translations() {
+                            error!("Failed to refresh tray translations: {}", e);
+                        }
+                    }
                 }
             }
         }

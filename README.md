@@ -49,6 +49,12 @@ We welcome everyone to help test the application on different platforms and repo
   - Native macOS notification support
   - Real-time timestamp updates (per second)
 
+- 🌍 **Internationalization (i18n)**
+  - Multi-language support (English, Chinese, Japanese)
+  - Automatic system language detection
+  - Real-time language switching
+  - All UI elements and tray menu fully localized
+
 ## 📸 Screenshots
 
 <p align="center">
@@ -97,6 +103,19 @@ sudo dnf install gtk3-devel libxdo-devel libappindicator-gtk3-devel
    ```
 
 2. **Build the project**
+   
+   **For Linux users**: Different distributions require different system tray libraries:
+   - **KDE Neon / Ubuntu with KDE**: Use the provided build script
+     ```bash
+     ./build-linux.sh
+     ```
+   - **Linux Mint / Ubuntu MATE**: Standard build works
+     ```bash
+     cargo build --release
+     ```
+   - For detailed Linux build instructions, see [Linux Tray Dependencies](docs/LINUX_TRAY_DEPENDENCIES.md)
+   
+   **For macOS/Windows users**:
    ```bash
    cargo build --release
    ```

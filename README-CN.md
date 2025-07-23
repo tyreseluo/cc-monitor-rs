@@ -49,6 +49,12 @@
   - macOS 原生通知支持
   - 每秒实时更新的时间戳
 
+- 🌍 **国际化 (i18n)**
+  - 多语言支持（英语、中文、日语）
+  - 自动检测系统语言
+  - 实时语言切换
+  - 所有 UI 元素和托盘菜单完全本地化
+
 ## 📸 截图
 
 <p align="center">
@@ -77,7 +83,10 @@
 - libxdo（键盘快捷键支持）
 
 ```bash
-# Ubuntu/Debian
+# Ubuntu/Debian (标准桌面环境)
+sudo apt install libgtk-3-dev libxdo-dev libayatana-appindicator3-dev
+
+# KDE Neon / Ubuntu with KDE
 sudo apt install libgtk-3-dev libxdo-dev libappindicator3-dev
 
 # Arch/Manjaro
@@ -98,6 +107,19 @@ sudo dnf install gtk3-devel libxdo-devel libappindicator-gtk3-devel
    ```
 
 2. **构建项目**
+   
+   **Linux 用户注意**: 不同发行版需要不同的系统托盘库：
+   - **KDE Neon / Ubuntu with KDE**: 使用提供的构建脚本
+     ```bash
+     ./build-linux.sh
+     ```
+   - **Linux Mint / Ubuntu MATE**: 标准构建即可
+     ```bash
+     cargo build --release
+     ```
+   - 详细的 Linux 构建说明，请查看 [Linux 托盘依赖说明](docs/LINUX_TRAY_DEPENDENCIES.md)
+   
+   **macOS/Windows 用户**:
    ```bash
    cargo build --release
    ```
