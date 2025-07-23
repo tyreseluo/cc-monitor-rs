@@ -8,6 +8,7 @@ use anyhow::Result;
 use crate::monitor::{NetworkMonitor, CcusageMonitor, MonitorData, CcusageData};
 use crate::ui_updates::{enqueue_monitor_update, MonitorUpdate};
 use crate::utils::notifications::{show_notification, show_usage_notification};
+use crate::i18n;
 
 /// The single global Tokio runtime that is used by all async tasks.
 static TOKIO_RUNTIME: OnceLock<Runtime> = OnceLock::new();
@@ -186,12 +187,14 @@ async fn perform_monitor_update(
                 let duration = reset_time - now;
                 let hours = duration.num_hours();
                 let minutes = duration.num_minutes() % 60;
-                format!("{} 小时 {} 分钟", hours, minutes)
+                format!("{} {} {} {}", 
+                    hours, i18n::get(i18n::keys::COMMON_HOUR),
+                    minutes, i18n::get(i18n::keys::COMMON_MINUTE))
             } else {
-                "已过期".to_string()
+                i18n::get(i18n::keys::USAGE_EXPIRED)
             }
         } else {
-            "未知".to_string()
+            i18n::get(i18n::keys::COMMON_UNKNOWN)
         };
         
         // Send usage notification

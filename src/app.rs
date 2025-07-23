@@ -56,6 +56,11 @@ impl MatchEvent for App {
     fn handle_startup(&mut self, cx: &mut Cx) {
         log!("App startup called");
         
+        // Initialize main screen
+        if let Some(mut main_screen) = self.ui.widget(id!(body)).borrow_mut::<MainScreen>() {
+            main_screen.initialize(cx);
+        }
+        
         // Initialize system tray
         let tray_handle = TrayHandle::new();
         if let Err(e) = tray_handle.init() {

@@ -1,4 +1,5 @@
 use makepad_widgets::*;
+use crate::i18n;
 
 live_design! {
     use link::theme::*;
@@ -131,18 +132,18 @@ impl StatusIndicator {
         // Update status text
         if let Some(mut label) = self.view.label(id!(status_text)).borrow_mut() {
             let text = if self.connected {
-                "状态: 已连接"
+                format!("{}: {}", i18n::get(i18n::keys::NETWORK_STATUS), i18n::get(i18n::keys::NETWORK_CONNECTED))
             } else {
-                "状态: 连接失败"
+                format!("{}: {}", i18n::get(i18n::keys::NETWORK_STATUS), i18n::get(i18n::keys::NETWORK_DISCONNECTED))
             };
-            label.set_text(cx, text);
+            label.set_text(cx, &text);
         }
 
         // Update speed
         if let Some(mut label) = self.view.label(id!(speed_label)).borrow_mut() {
             let text = match &self.speed {
-                Some(speed) => format!("🚀 网速: {}", speed),
-                None => "🚀 网速: --".to_string(),
+                Some(speed) => format!("{}: {}", i18n::get(i18n::keys::NETWORK_SPEED), speed),
+                None => format!("{}: --", i18n::get(i18n::keys::NETWORK_SPEED)),
             };
             label.set_text(cx, &text);
         }
@@ -167,10 +168,14 @@ impl StatusIndicator {
 
             // Update latency text
             if let Some(mut label) = self.view.label(id!(latency_label)).borrow_mut() {
-                label.set_text(cx, &format!("延迟: {}", latency));
+                label.set_text(cx, &format!("{}: {}", i18n::get(i18n::keys::NETWORK_LATENCY), latency));
             }
         } else if let Some(mut label) = self.view.label(id!(latency_label)).borrow_mut() {
-            label.set_text(cx, "延迟: --");
+            label.set_text(cx, &format!("{}: --", i18n::get(i18n::keys::NETWORK_LATENCY)));
         }
+    }
+    
+    pub fn refresh_translations(&mut self, cx: &mut Cx) {
+        self.apply_status_updates(cx);
     }
 }

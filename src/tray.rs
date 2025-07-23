@@ -12,6 +12,7 @@ use tray_icon::{
 use std::{cell::RefCell, rc::Rc};
 use anyhow::Result;
 use crate::monitor::MonitorData;
+use crate::i18n;
 
 pub struct TrayManager {
     tray: TrayIcon,
@@ -29,18 +30,42 @@ pub struct TrayManager {
 impl TrayManager {
     pub fn new() -> Result<Self> {
         // Create menu items
-        let status_item = MenuItem::new("Claude Code Monitor v1.0", true, None);
+        let status_item = MenuItem::new(&i18n::get(i18n::keys::APP_VERSION), true, None);
         let separator1 = PredefinedMenuItem::separator();
 
-        let network_item = MenuItem::new("网络: 检测中...", false, None);
-        let usage_item = MenuItem::new("使用: 检测中...", false, None);
-        let cost_item = MenuItem::new("花费: 检测中...", false, None);
-        let model_item = MenuItem::new("模型: 检测中...", false, None);
-        let remaining_item = MenuItem::new("剩余时间: 检测中...", false, None);
-        let status_active_item = MenuItem::new("状态: 检测中...", false, None);
+        let network_item = MenuItem::new(
+            &format!("{}: {}", i18n::get(i18n::keys::TRAY_NETWORK), i18n::get(i18n::keys::TRAY_CHECKING)),
+            false,
+            None
+        );
+        let usage_item = MenuItem::new(
+            &format!("{}: {}", i18n::get(i18n::keys::TRAY_USAGE), i18n::get(i18n::keys::TRAY_CHECKING)),
+            false,
+            None
+        );
+        let cost_item = MenuItem::new(
+            &format!("{}: {}", i18n::get(i18n::keys::TRAY_COST), i18n::get(i18n::keys::TRAY_CHECKING)),
+            false,
+            None
+        );
+        let model_item = MenuItem::new(
+            &format!("{}: {}", i18n::get(i18n::keys::TRAY_MODEL), i18n::get(i18n::keys::TRAY_CHECKING)),
+            false,
+            None
+        );
+        let remaining_item = MenuItem::new(
+            &format!("{}: {}", i18n::get(i18n::keys::TRAY_REMAINING), i18n::get(i18n::keys::TRAY_CHECKING)),
+            false,
+            None
+        );
+        let status_active_item = MenuItem::new(
+            &format!("{}: {}", i18n::get(i18n::keys::TRAY_STATUS), i18n::get(i18n::keys::TRAY_CHECKING)),
+            false,
+            None
+        );
 
         let separator2 = PredefinedMenuItem::separator();
-        let quit_item = MenuItem::new("退出", true, None);
+        let quit_item = MenuItem::new(&i18n::get(i18n::keys::TRAY_QUIT), true, None);
 
         // Create menu
         let menu = Menu::new();
@@ -61,7 +86,7 @@ impl TrayManager {
         // Build tray with platform considerations
         let builder = TrayIconBuilder::new()
             .with_menu(Box::new(menu.clone()))
-            .with_tooltip("Claude Code Monitor")
+            .with_tooltip(&i18n::get(i18n::keys::APP_NAME))
             .with_icon(icon);
 
         // Linux sometimes requires a menu to show the icon
@@ -89,10 +114,11 @@ impl TrayManager {
     pub fn update_status(&self, data: &MonitorData) -> Result<()> {
         // Update network status
         let network_text = if data.network_connected {
-            format!("🟢 网络: 已连接 {}",
+            format!("{} {}",
+                i18n::get(i18n::keys::TRAY_NETWORK_CONNECTED),
                 data.latency.as_deref().unwrap_or(""))
         } else {
-            "🔴 网络: 未连接".to_string()
+            i18n::get(i18n::keys::TRAY_NETWORK_DISCONNECTED)
         };
         self.network_item.set_text(network_text);
 
@@ -104,30 +130,32 @@ impl TrayManager {
         self.usage_item.set_text(usage_text);
 
         // Update cost
-        let cost_text = format!("💰 花费: {}", data.ccusage_data.cost);
+        let cost_text = format!("💰 {}: {}", i18n::get(i18n::keys::TRAY_COST), data.ccusage_data.cost);
         self.cost_item.set_text(cost_text);
 
         // Update model
-        let model_text = format!("🤖 模型: {}",
+        let model_text = format!("🤖 {}: {}",
+            i18n::get(i18n::keys::TRAY_MODEL),
             if data.ccusage_data.model.is_empty() { "--" } else { &data.ccusage_data.model }
         );
         self.model_item.set_text(model_text);
 
         // Update remaining time
-        let remaining_text = format!("⏱️ 剩余时间: {}", data.ccusage_data.remaining_time);
+        let remaining_text = format!("⏱️ {}: {}", i18n::get(i18n::keys::TRAY_REMAINING), data.ccusage_data.remaining_time);
         self.remaining_item.set_text(remaining_text);
 
         // Update active status
         let status_text = if data.ccusage_data.status == "ACTIVE" {
-            "✅ 状态: 活跃中"
+            i18n::get(i18n::keys::TRAY_STATUS_ACTIVE)
         } else {
-            "⏸️ 状态: 已完成"
+            i18n::get(i18n::keys::TRAY_STATUS_COMPLETED)
         };
         self.status_active_item.set_text(status_text);
 
         // Update tray tooltip with current status
         let tooltip = format!(
-            "Claude Code Monitor\n{} | {} | {}",
+            "{}\n{} | {} | {}",
+            i18n::get(i18n::keys::APP_NAME),
             if data.network_connected { "🟢" } else { "🔴" },
             data.ccusage_data.tokens,
             data.ccusage_data.remaining_time

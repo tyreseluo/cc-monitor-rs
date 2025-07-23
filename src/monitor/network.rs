@@ -2,6 +2,7 @@ use std::process::Command;
 use std::time::{Duration, Instant};
 use std::net::{TcpStream, ToSocketAddrs};
 use std::env;
+use crate::i18n;
 
 #[derive(Clone)]
 pub struct NetworkMonitor;
@@ -167,13 +168,13 @@ impl NetworkMonitor {
                         Ok(_) => {
                             let elapsed = start.elapsed().as_millis() as f64;
                             let speed = if elapsed < 100.0 {
-                                "优秀"
+                                i18n::get(i18n::keys::NETWORK_EXCELLENT)
                             } else if elapsed < 200.0 {
-                                "良好"
+                                i18n::get(i18n::keys::NETWORK_GOOD)
                             } else if elapsed < 500.0 {
-                                "一般"
+                                i18n::get(i18n::keys::NETWORK_FAIR)
                             } else {
-                                "较慢"
+                                i18n::get(i18n::keys::NETWORK_SLOW)
                             };
                             
                             (true, Some(speed.to_string()), Some(elapsed))

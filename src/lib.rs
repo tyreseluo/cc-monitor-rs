@@ -5,3 +5,4 @@ pub mod utils;
 pub mod background;
 pub mod ui_updates;
 pub mod tray;
+pub mod i18n;
