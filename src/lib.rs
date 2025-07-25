@@ -6,3 +6,4 @@ pub mod background;
 pub mod ui_updates;
 pub mod tray;
 pub mod i18n;
+pub mod tui;

@@ -164,72 +164,17 @@ impl TrayManager {
     }
 
     fn create_icon() -> Result<tray_icon::Icon> {
-        // Load ccm-logo.png from assets
-        let icon_path = std::path::Path::new("assets/ccm-logo.png");
+        // Embed the logo directly in the binary
+        const ICON_DATA: &[u8] = include_bytes!("../assets/ccm-logo-128.png");
         
-        // Try to load from file system first (for development)
-        if icon_path.exists() {
-            let icon_data = std::fs::read(icon_path)?;
-            let img = image::load_from_memory(&icon_data)?;
-            let rgba = img.to_rgba8();
-            let (width, height) = (rgba.width(), rgba.height());
-            let icon_data = rgba.into_raw();
-            
-            return tray_icon::Icon::from_rgba(icon_data, width, height)
-                .map_err(|e| anyhow::anyhow!("Failed to create icon: {}", e));
-        }
+        // Load the embedded icon
+        let img = image::load_from_memory(ICON_DATA)?;
+        let rgba = img.to_rgba8();
+        let (width, height) = (rgba.width(), rgba.height());
+        let icon_data = rgba.into_raw();
         
-        // Fallback to programmatically generated icon if file not found
-        let size = 32;
-        let mut rgba = vec![0u8; size * size * 4];
-
-        // Draw a simple "C" for Claude
-        for y in 0..size {
-            for x in 0..size {
-                let idx = (y * size + x) * 4;
-
-                // Background (transparent)
-                rgba[idx] = 0;
-                rgba[idx + 1] = 0;
-                rgba[idx + 2] = 0;
-                rgba[idx + 3] = 0;
-
-                // Draw circle outline
-                let cx = size as f32 / 2.0;
-                let cy = size as f32 / 2.0;
-                let r = (size as f32 / 2.0) - 2.0;
-
-                let dx = x as f32 - cx;
-                let dy = y as f32 - cy;
-                let dist = (dx * dx + dy * dy).sqrt();
-
-                // Draw circle
-                if (dist - r).abs() < 2.0 {
-                    // Blue circle
-                    rgba[idx] = 74;      // R
-                    rgba[idx + 1] = 158;  // G
-                    rgba[idx + 2] = 255;  // B
-                    rgba[idx + 3] = 255;  // A
-                }
-
-                // Draw "C" inside
-                if x >= 10 && x <= 22 && y >= 8 && y <= 24 {
-                    let in_c = (x >= 10 && x <= 14 && y >= 8 && y <= 24) || // Left vertical
-                               (y >= 8 && y <= 12 && x >= 10 && x <= 22) || // Top horizontal
-                               (y >= 20 && y <= 24 && x >= 10 && x <= 22);   // Bottom horizontal
-
-                    if in_c {
-                        rgba[idx] = 255;      // R
-                        rgba[idx + 1] = 255;  // G
-                        rgba[idx + 2] = 255;  // B
-                        rgba[idx + 3] = 255;  // A
-                    }
-                }
-            }
-        }
-
-        let icon = tray_icon::Icon::from_rgba(rgba, size as u32, size as u32)?;
-        Ok(icon)
+        tray_icon::Icon::from_rgba(icon_data, width, height)
+            .map_err(|e| anyhow::anyhow!("Failed to create icon: {}", e))
     }
 
     pub fn handle_menu_event(&self, event: &tray_icon::menu::MenuEvent) -> bool {

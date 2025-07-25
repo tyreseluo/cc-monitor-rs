@@ -72,6 +72,9 @@ impl Translations for JapaneseTranslations {
             "common.last_update" => "🕐 最終更新",
             "common.press_to_quit" => "Cmd+Q を押して監視を停止",
             
+            // Model Pricing
+            "model_pricing.comparison" => "📊 モデル価格比較",
+            
             _ => key, // Return key if translation not found
         }.to_string()
     }

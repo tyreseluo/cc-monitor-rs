@@ -57,12 +57,18 @@ We welcome everyone to help test the application on different platforms and repo
 
 ## 📸 Screenshots
 
+### GUI Mode
 <p align="center">
-  <img src="assets/ccm-tray.png" width="600" alt="tray">
+  <img src="assets/ccm-tray.png" width="600" alt="System Tray">
 </p>
 
 <p align="center">
   <img src="assets/ccm.png" width="600" alt="Main Interface">
+</p>
+
+### TUI Mode (Terminal UI)
+<p align="center">
+  <img src="assets/ccm-tui.png" width="600" alt="Terminal Interface">
 </p>
 
 ## 🚀 Getting Started
@@ -121,10 +127,19 @@ sudo dnf install gtk3-devel libxdo-devel libappindicator-gtk3-devel
    ```
 
 3. **Run the application**
+   
+   **GUI Mode (default)**:
    ```bash
    cargo run --release
-   # Or use the shorter command after building:
+   # Or use the binary directly:
    ./target/release/cc-monitor-rs
+   ```
+   
+   **Terminal UI Mode**:
+   ```bash
+   cargo run --release -- --tui
+   # Or use the binary directly:
+   ./target/release/cc-monitor-rs --tui
    ```
 
 ### Quick Start with ccm
@@ -134,9 +149,46 @@ After building, you can create a convenient alias:
 # Create a symbolic link (Unix-like systems)
 ln -s $(pwd)/target/release/cc-monitor-rs /usr/local/bin/ccm
 
-# Or add an alias to your shell configuration
+# Or add aliases to your shell configuration
 alias ccm='cargo run --release --bin cc-monitor-rs'
+alias ccm-tui='cargo run --release --bin cc-monitor-rs -- --tui'
 ```
+
+## 🎆 Usage Guide
+
+### Prerequisites
+1. **Ensure Claude Code is running**:
+   ```bash
+   claude code
+   ```
+
+2. **Choose your interface**:
+   - **GUI Mode**: Native window with system tray integration
+   - **TUI Mode**: Terminal-based interface for SSH/remote access
+
+### GUI Mode Features
+- Native window with real-time updates
+- System tray icon with status menu
+- Desktop notifications
+- Language selector in UI
+- Visual charts and indicators
+
+### TUI Mode Features
+- Full monitoring in terminal
+- Keyboard navigation
+- ASCII/Unicode charts
+- Color-coded status
+- Language switching (`l` key)
+
+### Keyboard Shortcuts (TUI)
+| Key | Action |
+|-----|--------|
+| `q`, `Esc` | Quit application |
+| `r` | Refresh data |
+| `l` | Cycle languages |
+| `Tab` | Switch panels |
+| `↑`/`↓` | Navigate items |
+| `Ctrl+C` | Force quit |
 
 ### Install from Release
 

@@ -72,6 +72,9 @@ impl Translations for EnglishTranslations {
             "common.last_update" => "🕐 Last Update",
             "common.press_to_quit" => "Press Cmd+Q to Stop Monitoring",
             
+            // Model Pricing
+            "model_pricing.comparison" => "📊 Model Pricing Comparison",
+            
             _ => key, // Return key if translation not found
         }.to_string()
     }

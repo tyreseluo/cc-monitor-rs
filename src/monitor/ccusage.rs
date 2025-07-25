@@ -70,15 +70,12 @@ impl CcusageMonitor {
         let start = std::time::Instant::now();
         let output = Command::new(&npx_path)
             .args(&args)
+            .stdout(std::process::Stdio::piped())
+            .stderr(std::process::Stdio::null())
             .output();
-        let elapsed = start.elapsed();
+        let _elapsed = start.elapsed();
         
-        if elapsed.as_millis() > 500 {
-            eprintln!("ccusage command took {}ms (mode: {})", 
-                elapsed.as_millis(), 
-                if use_calculate_mode { "calculate" } else { "cached" }
-            );
-        }
+        // Log timing internally if needed
             
         match output {
             Ok(output) if output.status.success() => {
@@ -122,8 +119,8 @@ impl CcusageMonitor {
                     }
                 }
             }
-            Err(e) => {
-                println!("Failed to parse JSON: {}", e);
+            Err(_e) => {
+                // Failed to parse JSON
             }
         }
         
@@ -426,6 +423,8 @@ impl CcusageMonitor {
         if let Some(npx_path) = &self.npx_path {
             let _ = Command::new(npx_path)
                 .args(&["--yes", "ccusage@latest", "--version"])
+                .stdout(std::process::Stdio::null())
+                .stderr(std::process::Stdio::null())
                 .output();
         }
     }
@@ -437,6 +436,8 @@ impl CcusageMonitor {
             // Try daily command first
             if let Ok(output) = Command::new(npx_path)
                 .args(&["--yes", "ccusage@latest", "daily", "--order", "asc"])
+                .stdout(std::process::Stdio::piped())
+                .stderr(std::process::Stdio::null())
                 .output() 
             {
                 if output.status.success() {
@@ -449,6 +450,8 @@ impl CcusageMonitor {
             if daily_costs.is_empty() {
                 if let Ok(output) = Command::new(npx_path)
                     .args(&["--yes", "ccusage@latest", "blocks"])
+                    .stdout(std::process::Stdio::piped())
+                    .stderr(std::process::Stdio::null())
                     .output()
                 {
                     if output.status.success() {

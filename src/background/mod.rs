@@ -2,7 +2,29 @@ use std::sync::{Arc, Mutex, OnceLock};
 use std::time::Duration;
 use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender};
 use tokio::runtime::Runtime;
-use makepad_widgets::log;
+use std::sync::atomic::{AtomicBool, Ordering};
+
+// Global flag to control logging
+static LOGGING_ENABLED: AtomicBool = AtomicBool::new(true);
+
+// Wrapper around makepad log that checks if logging is enabled
+macro_rules! log {
+    ($($arg:tt)*) => {
+        if crate::background::LOGGING_ENABLED.load(Ordering::Relaxed) {
+            makepad_widgets::log!($($arg)*);
+        }
+    };
+}
+
+/// Disable logging (for TUI mode)
+pub fn disable_logging() {
+    LOGGING_ENABLED.store(false, Ordering::Relaxed);
+}
+
+/// Enable logging (for GUI mode)
+pub fn enable_logging() {
+    LOGGING_ENABLED.store(true, Ordering::Relaxed);
+}
 use anyhow::Result;
 
 use crate::monitor::{NetworkMonitor, CcusageMonitor, MonitorData, CcusageData};
@@ -112,7 +134,7 @@ async fn perform_monitor_update(
     last_notification_time: &mut std::time::Instant,
     notification_interval: Duration,
 ) {
-    log!("Performing monitor update");
+    // Performing monitor update
 
     // Run network monitoring in blocking task
     let (ping_success, latency) = tokio::task::spawn_blocking({
@@ -125,8 +147,7 @@ async fn perform_monitor_update(
         move || monitor.check_connection()
     }).await.unwrap_or((false, None, None));
 
-    log!("Network status - ping: {}, conn: {}, latency: {:?}, speed: {:?}", 
-         ping_success, conn_success, latency, speed);
+    // Network status updated
 
     // Run ccusage monitoring in blocking task
     let ccusage_data = tokio::task::spawn_blocking({
@@ -137,8 +158,7 @@ async fn perform_monitor_update(
         }
     }).await.unwrap_or_else(|_| CcusageData::default());
 
-    log!("Ccusage data: session={}, tokens={}, cost={}", 
-         ccusage_data.latest_session, ccusage_data.tokens, ccusage_data.cost);
+    // Ccusage data updated
 
     let daily_costs = tokio::task::spawn_blocking({
         let monitor = ccusage_monitor.clone();

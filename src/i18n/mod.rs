@@ -192,4 +192,7 @@ pub mod keys {
     pub const COMMON_DAY: &str = "common.day";
     pub const COMMON_LAST_UPDATE: &str = "common.last_update";
     pub const COMMON_PRESS_TO_QUIT: &str = "common.press_to_quit";
+    
+    // Model Pricing
+    pub const MODEL_PRICING_COMPARISON: &str = "model_pricing.comparison";
 }

@@ -74,10 +74,14 @@ impl NetworkMonitor {
         let output = if cfg!(target_os = "windows") {
             Command::new("ping")
                 .args(&["-n", "1", "8.8.8.8"])
+                .stdout(std::process::Stdio::piped())
+                .stderr(std::process::Stdio::null())
                 .output()
         } else {
             Command::new("ping")
                 .args(&["-c", "1", "-W", "2000", "8.8.8.8"])  // -W 2000 for 2s timeout
+                .stdout(std::process::Stdio::piped())
+                .stderr(std::process::Stdio::null())
                 .output()
         };
         
@@ -165,7 +169,7 @@ impl NetworkMonitor {
             };
             
             // Log that we're using proxy
-            eprintln!("Using proxy: {}", addr);
+            // Using proxy (silently)
             addr
         } else {
             // Use a reliable IP address instead of domain to avoid DNS issues  

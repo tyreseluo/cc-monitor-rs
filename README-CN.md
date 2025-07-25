@@ -57,12 +57,18 @@
 
 ## 📸 截图
 
+### GUI 模式
 <p align="center">
-  <img src="assets/ccm-tray.png" width="600" alt="tray">
+  <img src="assets/ccm-tray.png" width="600" alt="系统托盘">
 </p>
 
 <p align="center">
-  <img src="assets/ccm.png" width="600" alt="Main Interface">
+  <img src="assets/ccm.png" width="600" alt="主界面">
+</p>
+
+### TUI 模式（终端界面）
+<p align="center">
+  <img src="assets/ccm-tui.png" width="600" alt="终端界面">
 </p>
 
 
@@ -125,10 +131,19 @@ sudo dnf install gtk3-devel libxdo-devel libappindicator-gtk3-devel
    ```
 
 3. **运行应用**
+   
+   **GUI 模式（默认）**：
    ```bash
    cargo run --release
-   # 或者构建后使用更短的命令：
+   # 或直接使用二进制文件：
    ./target/release/cc-monitor-rs
+   ```
+   
+   **终端 UI 模式**：
+   ```bash
+   cargo run --release -- --tui
+   # 或直接使用二进制文件：
+   ./target/release/cc-monitor-rs --tui
    ```
 
 ### 使用 ccm 快速启动
@@ -140,7 +155,44 @@ ln -s $(pwd)/target/release/cc-monitor-rs /usr/local/bin/ccm
 
 # 或者添加别名到您的 shell 配置
 alias ccm='cargo run --release --bin cc-monitor-rs'
+alias ccm-tui='cargo run --release --bin cc-monitor-rs -- --tui'
 ```
+
+## 🎆 使用指南
+
+### 前置条件
+1. **确保 Claude Code 正在运行**：
+   ```bash
+   claude code
+   ```
+
+2. **选择您的界面**：
+   - **GUI 模式**：原生窗口，集成系统托盘
+   - **TUI 模式**：终端界面，适合 SSH/远程访问
+
+### GUI 模式特性
+- 原生窗口，实时更新
+- 系统托盘图标和状态菜单
+- 桌面通知
+- UI 中的语言选择器
+- 可视化图表和指示器
+
+### TUI 模式特性
+- 终端中的完整监控
+- 键盘导航
+- ASCII/Unicode 图表
+- 彩色状态指示
+- 语言切换（`l` 键）
+
+### 键盘快捷键（TUI）
+| 按键 | 操作 |
+|-----|--------|
+| `q`, `Esc` | 退出应用 |
+| `r` | 刷新数据 |
+| `l` | 循环切换语言 |
+| `Tab` | 切换面板 |
+| `↑`/`↓` | 导航项目 |
+| `Ctrl+C` | 强制退出 |
 
 ### 从发布版本安装
 

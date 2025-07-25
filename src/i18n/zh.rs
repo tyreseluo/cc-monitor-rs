@@ -72,6 +72,9 @@ impl Translations for ChineseTranslations {
             "common.last_update" => "🕐 最后更新",
             "common.press_to_quit" => "按 Cmd+Q 停止监控",
             
+            // Model Pricing
+            "model_pricing.comparison" => "📊 模型价格对比",
+            
             _ => key, // Return key if translation not found
         }.to_string()
     }

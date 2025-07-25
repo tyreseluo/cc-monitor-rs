@@ -1,6 +1,7 @@
 use makepad_widgets::*;
 use crate::monitor::CcusageData;
 use crate::i18n;
+use crate::utils::model_pricing;
 
 live_design! {
     use link::theme::*;
@@ -95,6 +96,33 @@ live_design! {
             }
         }
         
+        // Model Pricing Comparison
+        model_pricing_section = <View> {
+            width: Fill,
+            height: Fit,
+            flow: Down,
+            spacing: 4
+            
+            pricing_title = <Label> {
+                text: "📊 模型价格对比:"
+                draw_text: {
+                    text_style: {
+                        font_size: 14.0
+                    }
+                    color: #ffffff
+                }
+            }
+            
+            pricing_list = <View> {
+                width: Fill,
+                height: Fit,
+                flow: Down,
+                spacing: 2
+                
+                // Model pricing items will be dynamically created
+            }
+        }
+        
         // Model
         model_row = <View> {
             width: Fill,
@@ -133,6 +161,7 @@ live_design! {
 pub struct UsageDisplay {
     #[deref] view: View,
     #[rust] ccusage_data: CcusageData,
+    #[rust] model_prices: Vec<(String, String, f64)>,
 }
 
 impl Widget for UsageDisplay {
@@ -149,8 +178,22 @@ impl Widget for UsageDisplay {
 impl UsageDisplay {
     pub fn update_data(&mut self, cx: &mut Cx, data: CcusageData) {
         self.ccusage_data = data;
+        self.update_model_prices();
         self.apply_data_updates(cx);
         cx.redraw_all();
+    }
+    
+    fn update_model_prices(&mut self) {
+        // Calculate prices for all models based on current tokens
+        // For simplicity, we'll assume 30% input tokens and 70% output tokens
+        let total_tokens = self.ccusage_data.tokens_num;
+        if total_tokens > 0 {
+            let input_tokens = (total_tokens as f64 * 0.3) as u64;
+            let output_tokens = (total_tokens as f64 * 0.7) as u64;
+            self.model_prices = model_pricing::calculate_all_model_costs(input_tokens, output_tokens);
+        } else {
+            self.model_prices.clear();
+        }
     }
     
     fn apply_data_updates(&mut self, cx: &mut Cx) {
@@ -208,6 +251,39 @@ impl UsageDisplay {
                 _ => i18n::get(i18n::keys::USAGE_INACTIVE),
             };
             label.set_text(cx, &format!("{}: {}", i18n::get(i18n::keys::USAGE_STATUS), status_text));
+        }
+        
+        // Update model pricing comparison
+        self.update_pricing_display(cx);
+    }
+    
+    fn update_pricing_display(&mut self, cx: &mut Cx) {
+        if self.model_prices.is_empty() {
+            return;
+        }
+        
+        // Update pricing title
+        if let Some(mut label) = self.view.label(id!(pricing_title)).borrow_mut() {
+            label.set_text(cx, &format!("📊 {}", i18n::get(i18n::keys::MODEL_PRICING_COMPARISON)));
+        }
+        
+        // For now, we'll show the top 5 models with their prices in the cost label
+        // In a more advanced implementation, we would dynamically create labels
+        let mut pricing_text = String::new();
+        for (i, (_model_id, display_name, cost)) in self.model_prices.iter().enumerate() {
+            if i >= 5 {
+                break;
+            }
+            if i > 0 {
+                pricing_text.push_str(" | ");
+            }
+            pricing_text.push_str(&format!("{}: ${:.2}", display_name, cost));
+        }
+        
+        // Update the pricing list content as part of the cost label for now
+        if let Some(mut label) = self.view.label(id!(cost_label)).borrow_mut() {
+            let current_cost = &self.ccusage_data.cost;
+            label.set_text(cx, &format!("{}: {}\n{}", i18n::get(i18n::keys::USAGE_COST), current_cost, pricing_text));
         }
     }
     

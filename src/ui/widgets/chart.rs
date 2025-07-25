@@ -536,16 +536,16 @@ impl Chart {
                     5.0
                 };
                 
-                println!("Bar {}: cost=${:.2}, height={:.1}", i, cost.cost, height);
+                // Bar height calculated
                 
                 // Update bar height
                 if let Some(mut bar) = self.view.view(bar_ids[i]).borrow_mut() {
                     bar.apply_over(cx, live!{
                         height: (height)
                     });
-                    println!("Updated bar {} height to {}", i, height);
+                    // Bar updated
                 } else {
-                    println!("Failed to find bar {}", i);
+                    // Bar not found
                 }
                 
                 // Update amount label
