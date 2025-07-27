@@ -116,19 +116,19 @@ jobs:
 
           if [[ "$OS" == "macos-14" ]]; then
             FILE="CC Monitor-${VERSION}-macOS-${ARCH}.dmg"
-            mv ./dist/CC Monitor_${VERSION}_aarch64.dmg ./dist/$FILE
+            mv "./dist/CC Monitor_${VERSION}_aarch64.dmg" "./dist/$FILE"
             echo "RELEASE_FILE=$FILE" >> $GITHUB_ENV
             echo "UPLOAD_FILES=./dist/$FILE" >> $GITHUB_ENV
 
           elif [[ "$OS" == "macos-13" ]]; then
             FILE="CC Monitor-${VERSION}-macOS-${ARCH}.dmg"
-            mv ./dist/CC Monitor_${VERSION}_x64.dmg ./dist/$FILE
+            mv "./dist/CC Monitor_${VERSION}_x64.dmg" "./dist/$FILE"
             echo "RELEASE_FILE=$FILE" >> $GITHUB_ENV
             echo "UPLOAD_FILES=./dist/$FILE" >> $GITHUB_ENV
 
           elif [[ "$OS" == "windows-2022" ]]; then
             FILE="CC Monitor-${VERSION}-windows-${ARCH}-setup.exe"
-            mv ./dist/cc monitor_${VERSION}_x64-setup.exe ./dist/$FILE
+            mv "./dist/cc monitor_${VERSION}_x64-setup.exe" "./dist/$FILE"
             echo "RELEASE_FILE=$FILE" >> $GITHUB_ENV
             echo "UPLOAD_FILES=./dist/$FILE" >> $GITHUB_ENV
 
@@ -153,6 +153,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ env.VERSION }}
-          name: "Robrix v${{ env.VERSION }}"
-          token: ${{ secrets.ROBRIX_RELEASE }}
+          name: "CC Monitor v${{ env.VERSION }}"
+          token: ${{ secrets.CCMONITOR_RELEASE }}
           files: ${{ env.UPLOAD_FILES }}
