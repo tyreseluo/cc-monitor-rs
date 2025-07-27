@@ -141,9 +141,9 @@ jobs:
             echo "UPLOAD_FILES=./dist/$FILE" >> $GITHUB_ENV
 
           elif [[ "$OS" == "ubuntu-22.04" ]]; then
-            mv "./dist/cc monitor_${VERSION}_amd64.deb" "./dist/CC Monitor_${VERSION}_amd64.deb"
-            mv "./dist/cc monitor_${VERSION}_x86_64.AppImage" "./dist/CC Monitor_${VERSION}_x86_64.AppImage"
-            mv "./dist/cc monitor_${VERSION}_x86_64.tar.gz" "./dist/CC Monitor_${VERSION}_x86_64.tar.gz"
+            mv "./dist/cc-monitor-rs_${VERSION}_amd64.deb" "./dist/CC Monitor_${VERSION}_amd64.deb"
+            mv "./dist/cc-monitor-rs_${VERSION}_x86_64.AppImage" "./dist/CC Monitor_${VERSION}_x86_64.AppImage"
+            mv "./dist/cc-monitor-rs_${VERSION}_x86_64.tar.gz" "./dist/CC Monitor_${VERSION}_x86_64.tar.gz"
 
             {
               echo "DEB=CC Monitor_${VERSION}_amd64.deb"
