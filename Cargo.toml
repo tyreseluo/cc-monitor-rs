@@ -78,7 +78,7 @@ resources = [
     { src = "./dist/resources/makepad_fonts_chinese_regular_2", target = "makepad_fonts_chinese_regular_2" },
     { src = "./dist/resources/makepad_fonts_emoji", target = "makepad_fonts_emoji" },
     # CC Monitor resources
-    { src = "./dist/resources/cc_monitor", target = "cc_monitor_rs" },
+    { src = "./dist/resources/cc_monitor_rs", target = "cc_monitor_rs" },
 ]
 
 before-each-package-command = """
