@@ -90,7 +90,7 @@ robius-packaging-commands before-each-package \
 
 [package.metadata.packager.deb]
 depends = "./dist/depends_deb.txt"
-desktop_template = "./packaging/cc_monitor_rs.desktop"
+desktop_template = "./packaging/cc_monitor.desktop"
 section = "utils"
 
 [package.metadata.packager.macos]
