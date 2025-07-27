@@ -62,17 +62,25 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            libssl-dev \
-            libsqlite3-dev \
-            pkg-config \
-            llvm \
-            clang \
-            libclang-dev \
-            binfmt-support \
-            libxcursor-dev \
-            libx11-dev \
-            libasound2-dev \
-            libpulse-dev
+          libssl-dev \
+          libsqlite3-dev \
+          pkg-config \
+          llvm \
+          clang \
+          libclang-dev \
+          binfmt-support \
+          libxcursor-dev \
+          libx11-dev \
+          libasound2-dev \
+          libpulse-dev \
+          libgtk-3-dev \
+          libatk1.0-dev \
+          libglib2.0-dev \
+          libpango1.0-dev \
+          libcairo2-dev \
+          libxdo-dev \
+          libgdk-pixbuf2.0-dev \
+          libcairo-gobject2
 
       - name: Install Rust Stable
         uses: dtolnay/rust-toolchain@stable
@@ -116,26 +124,26 @@ jobs:
 
           if [[ "$OS" == "macos-14" ]]; then
             FILE="CC Monitor-${VERSION}-macOS-${ARCH}.dmg"
-            mv ./dist/CC Monitor_${VERSION}_aarch64.dmg ./dist/$FILE
+            mv "./dist/CC Monitor_${VERSION}_aarch64.dmg" "./dist/$FILE"
             echo "RELEASE_FILE=$FILE" >> $GITHUB_ENV
             echo "UPLOAD_FILES=./dist/$FILE" >> $GITHUB_ENV
 
           elif [[ "$OS" == "macos-13" ]]; then
             FILE="CC Monitor-${VERSION}-macOS-${ARCH}.dmg"
-            mv ./dist/CC Monitor_${VERSION}_x64.dmg ./dist/$FILE
+            mv "./dist/CC Monitor_${VERSION}_x64.dmg" "./dist/$FILE"
             echo "RELEASE_FILE=$FILE" >> $GITHUB_ENV
             echo "UPLOAD_FILES=./dist/$FILE" >> $GITHUB_ENV
 
           elif [[ "$OS" == "windows-2022" ]]; then
             FILE="CC Monitor-${VERSION}-windows-${ARCH}-setup.exe"
-            mv ./dist/cc monitor_${VERSION}_x64-setup.exe ./dist/$FILE
+            mv "./dist/cc-monitor-rs_${VERSION}_x64-setup.exe" "./dist/$FILE"
             echo "RELEASE_FILE=$FILE" >> $GITHUB_ENV
             echo "UPLOAD_FILES=./dist/$FILE" >> $GITHUB_ENV
 
           elif [[ "$OS" == "ubuntu-22.04" ]]; then
-            mv "./dist/cc monitor_${VERSION}_amd64.deb" "./dist/CC Monitor_${VERSION}_amd64.deb"
-            mv "./dist/cc monitor_${VERSION}_x86_64.AppImage" "./dist/CC Monitor_${VERSION}_x86_64.AppImage"
-            mv "./dist/cc monitor_${VERSION}_x86_64.tar.gz" "./dist/CC Monitor_${VERSION}_x86_64.tar.gz"
+            mv "./dist/cc-monitor-rs_${VERSION}_amd64.deb" "./dist/CC Monitor_${VERSION}_amd64.deb"
+            mv "./dist/cc-monitor-rs_${VERSION}_x86_64.AppImage" "./dist/CC Monitor_${VERSION}_x86_64.AppImage"
+            mv "./dist/cc-monitor-rs_${VERSION}_x86_64.tar.gz" "./dist/CC Monitor_${VERSION}_x86_64.tar.gz"
 
             {
               echo "DEB=CC Monitor_${VERSION}_amd64.deb"
@@ -153,6 +161,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ env.VERSION }}
-          name: "Robrix v${{ env.VERSION }}"
-          token: ${{ secrets.ROBRIX_RELEASE }}
+          name: "CC Monitor v${{ env.VERSION }}"
+          token: ${{ secrets.CCMONITOR_RELEASE }}
           files: ${{ env.UPLOAD_FILES }}

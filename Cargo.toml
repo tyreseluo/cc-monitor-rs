@@ -12,8 +12,8 @@ keywords = ["claude", "monitoring", "makepad", "ui", "cli"]
 categories = ["gui", "command-line-utilities", "visualization"]
 
 [dependencies]
-# makepad-widgets = { git = "https://github.com/kevinaboos/makepad", branch = "portal_list_is_filling_viewport" }
-makepad-widgets = "1.0.0"
+makepad-widgets = { git = "https://github.com/makepad/makepad", branch = "dev" }
+# makepad-widgets = "1.0.0"
 tokio = { version = "1.41", features = ["full"] }
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
@@ -58,10 +58,9 @@ lto = "fat"
 ## Configuration for `cargo packager`
 [package.metadata.packager]
 product_name = "CC Monitor"
-identifier = "org.robius.cc_monitor"
-category = "SocialNetworking"
+identifier = "org.robius-china.CC-Monitor"
 authors = ["Zhang Handong"]
-license_file = "LICENSE-MIT"
+license_file = "LICENSE"
 ### Note: there is an 80-character max for each line of the `long_description`.
 long_description = """
 A real-time Claude Code usage monitor built with Rust and Makepad.
@@ -78,7 +77,7 @@ resources = [
     { src = "./dist/resources/makepad_fonts_chinese_regular_2", target = "makepad_fonts_chinese_regular_2" },
     { src = "./dist/resources/makepad_fonts_emoji", target = "makepad_fonts_emoji" },
     # CC Monitor resources
-    { src = "./dist/resources/cc_monitor", target = "cc_monitor_rs" },
+    { src = "./dist/resources/cc_monitor_rs", target = "cc_monitor_rs" },
 ]
 
 before-each-package-command = """
@@ -90,7 +89,7 @@ robius-packaging-commands before-each-package \
 
 [package.metadata.packager.deb]
 depends = "./dist/depends_deb.txt"
-desktop_template = "./packaging/cc_monitor_rs.desktop"
+desktop_template = "./packaging/cc_monitor.desktop"
 section = "utils"
 
 [package.metadata.packager.macos]

@@ -3,7 +3,7 @@ Categories={{categories}}
 {{#if comment}}
 Comment={{comment}}
 {{/if}}
-Exec={{exec}} {{exec_arg}}
+Exec=env GDK_BACKEND=wayland,x11 {{exec}} {{exec_arg}}
 Icon={{icon}}
 Name={{name}}
 Terminal=false
