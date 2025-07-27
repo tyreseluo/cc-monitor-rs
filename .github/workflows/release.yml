@@ -72,7 +72,12 @@ jobs:
             libxcursor-dev \
             libx11-dev \
             libasound2-dev \
-            libpulse-dev
+            libpulse-dev \
+            libgtk-3-dev  \
+            libatk1.0-dev \
+            libglib2.0-dev \
+            libpango1.0-dev \
+            libcairo2-dev
 
       - name: Install Rust Stable
         uses: dtolnay/rust-toolchain@stable
@@ -128,7 +133,7 @@ jobs:
 
           elif [[ "$OS" == "windows-2022" ]]; then
             FILE="CC Monitor-${VERSION}-windows-${ARCH}-setup.exe"
-            mv "./dist/cc monitor_${VERSION}_x64-setup.exe" "./dist/$FILE"
+            mv "./dist/cc-monitor-rs_${VERSION}_x64-setup.exe" "./dist/$FILE"
             echo "RELEASE_FILE=$FILE" >> $GITHUB_ENV
             echo "UPLOAD_FILES=./dist/$FILE" >> $GITHUB_ENV
 
