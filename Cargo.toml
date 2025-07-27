@@ -61,7 +61,7 @@ product_name = "CC Monitor"
 identifier = "org.robius.cc_monitor"
 category = "SocialNetworking"
 authors = ["Zhang Handong"]
-license_file = "LICENSE-MIT"
+license_file = "LICENSE"
 ### Note: there is an 80-character max for each line of the `long_description`.
 long_description = """
 A real-time Claude Code usage monitor built with Rust and Makepad.
